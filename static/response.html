@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Response - Energy Trading Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        pre {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .response-container {
+            margin-top: 20px;
+        }
+        .back-button {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Energy Trading Platform - API Response</h1>
+    </header>
+
+    <main>
+        <section>
+            <h2>API Response</h2>
+            <div class="response-container">
+                <h3>Endpoint: <span id="endpoint"></span></h3>
+                <h4>Status: <span id="status"></span></h4>
+                <div class="form-group">
+                    <label for="response">Response Data:</label>
+                    <pre id="response"></pre>
+                </div>
+            </div>
+            <div class="back-button">
+                <a href="/"><button>Back to Dashboard</button></a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Energy Trading Platform</p>
+    </footer>
+
+    <script>
+        // Extract query parameters from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const endpoint = urlParams.get('endpoint') || 'Unknown';
+        const status = urlParams.get('status') || 'Unknown';
+        const response = urlParams.get('response') || '{}';
+
+        // Update the page with response data
+        document.getElementById('endpoint').textContent = endpoint;
+        document.getElementById('status').textContent = status;
+        
+        try {
+            // Try to parse and pretty-print JSON
+            const jsonObj = JSON.parse(response);
+            document.getElementById('response').textContent = JSON.stringify(jsonObj, null, 2);
+        } catch (e) {
+            // If not valid JSON, just display as is
+            document.getElementById('response').textContent = response;
+        }
+    </script>
+</body>
+</html> 

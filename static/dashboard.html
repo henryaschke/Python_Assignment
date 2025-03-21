@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy Trading Platform - Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+    <style>
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+        }
+        .card h3 {
+            margin-top: 0;
+            color: #1e88e5;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .action-buttons button {
+            flex: 1;
+        }
+        .logout {
+            margin-top: 20px;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><i class="fas fa-bolt"></i> Energy Trading Platform</h1>
+        <p>Real-time energy trading and battery management</p>
+    </header>
+
+    <main>
+        <section id="status">
+            <div class="logout">
+                <button id="logout-button"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+
+            <h2><i class="fas fa-tachometer-alt"></i> System Dashboard</h2>
+            <div class="action-buttons">
+                <button id="load-status"><i class="fas fa-sync-alt"></i> Refresh Status</button>
+                <button id="load-battery"><i class="fas fa-battery-three-quarters"></i> Battery Status</button>
+            </div>
+            <div class="dashboard-grid">
+                <div class="card" id="system-status">
+                    <h3><i class="fas fa-server"></i> System Status</h3>
+                    <div class="card-content">
+                        <pre id="system-status-data">Click "Refresh Status" to see data</pre>
+                    </div>
+                </div>
+                <div class="card" id="battery-status">
+                    <h3><i class="fas fa-battery-full"></i> Battery Status</h3>
+                    <div class="card-content">
+                        <div id="battery-visual" style="display: none;">
+                            <div style="margin-bottom: 15px;">
+                                <div id="battery-level-container" style="height: 30px; background: #eee; border-radius: 8px; overflow: hidden;">
+                                    <div id="battery-level-indicator" style="height: 100%; width: 0%; background: linear-gradient(to right, #06d6a0, #4361ee); transition: width 1s ease;"></div>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+                                    <span>0%</span>
+                                    <span id="battery-percentage">--%</span>
+                                    <span>100%</span>
+                                </div>
+                            </div>
+                            <div class="badge-container" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
+                                <div><span class="badge badge-info"><i class="fas fa-database"></i> Total:</span> <span id="battery-total">-- kWh</span></div>
+                                <div><span class="badge badge-success"><i class="fas fa-check-circle"></i> Available:</span> <span id="battery-available">-- kWh</span></div>
+                                <div><span class="badge badge-warning"><i class="fas fa-exclamation-triangle"></i> Used:</span> <span id="battery-used">-- kWh</span></div>
+                            </div>
+                        </div>
+                        <pre id="battery-status-data">Click "Battery Status" to see data</pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="trading">
+            <h2><i class="fas fa-exchange-alt"></i> Electricity Trading</h2>
+            <div class="action-buttons">
+                <button id="load-market"><i class="fas fa-chart-line"></i> Market Price</button>
+                <button id="load-forecast"><i class="fas fa-chart-bar"></i> Price Forecast</button>
+                <button id="load-trades"><i class="fas fa-history"></i> Trade History</button>
+            </div>
+            <div class="dashboard-grid">
+                <div class="card" id="market-data">
+                    <h3><i class="fas fa-tag"></i> Current Market Price</h3>
+                    <div class="card-content">
+                        <div id="market-visual" style="display: none; margin-bottom: 15px;">
+                            <div style="display: flex; align-items: center; justify-content: center; margin: 20px 0;">
+                                <div style="text-align: center; background: #f8f9fa; padding: 15px; border-radius: 8px; min-width: 150px;">
+                                    <div style="font-size: 0.8rem; color: #666; margin-bottom: 5px;">Current Price</div>
+                                    <div id="current-price" style="font-size: 2rem; font-weight: bold; color: var(--primary);">--</div>
+                                    <div style="font-size: 0.8rem; color: #666;">per kWh</div>
+                                </div>
+                            </div>
+                            <div class="badge-container" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                <div><span class="badge badge-info"><i class="fas fa-clock"></i> Period:</span> <span id="market-period">--</span></div>
+                                <div><span class="badge badge-info"><i class="fas fa-map-marker-alt"></i> Market:</span> <span id="market-name">--</span></div>
+                            </div>
+                        </div>
+                        <pre id="market-data-content">Click "Market Price" to see data</pre>
+                    </div>
+                </div>
+                <div class="card" id="trade-actions">
+                    <h3><i class="fas fa-shopping-cart"></i> Trade Actions</h3>
+                    <div class="card-content">
+                        <div class="form-group">
+                            <label for="trade-quantity"><i class="fas fa-balance-scale"></i> Quantity (kWh):</label>
+                            <input type="number" id="trade-quantity" value="10" min="1" max="100">
+                        </div>
+                        <div class="form-group">
+                            <label for="trade-price"><i class="fas fa-money-bill-wave"></i> Price:</label>
+                            <input type="number" id="trade-price" value="40" min="1" step="0.01">
+                        </div>
+                        <div class="action-buttons">
+                            <button id="buy-button" class="buy-button"><i class="fas fa-arrow-circle-down"></i> Buy</button>
+                            <button id="sell-button" class="sell-button"><i class="fas fa-arrow-circle-up"></i> Sell</button>
+                        </div>
+                        <pre id="trade-result">Execute a trade to see results</pre>
+                    </div>
+                </div>
+                <div class="card" id="forecast-data">
+                    <h3><i class="fas fa-chart-line"></i> Price Forecast</h3>
+                    <div class="card-content">
+                        <pre id="forecast-data-content">Click "Price Forecast" to see data</pre>
+                    </div>
+                </div>
+                <div class="card" id="trade-history">
+                    <h3><i class="fas fa-history"></i> Trade History</h3>
+                    <div class="card-content">
+                        <pre id="trade-history-content">Click "View Trade History" to see data</pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="performance">
+            <h2><i class="fas fa-chart-pie"></i> Performance Metrics</h2>
+            <div class="action-buttons">
+                <button id="load-pnl"><i class="fas fa-calculator"></i> Trade P&L</button>
+                <button id="load-portfolio"><i class="fas fa-wallet"></i> Portfolio</button>
+                <button id="load-utilization"><i class="fas fa-bolt"></i> Battery Utilization</button>
+            </div>
+            <div class="dashboard-grid">
+                <div class="card" id="trade-pnl">
+                    <h3><i class="fas fa-chart-line"></i> Trade Profit/Loss</h3>
+                    <div class="card-content">
+                        <div id="pnl-visual" style="display: none; margin-bottom: 15px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                                <div style="text-align: center; background: rgba(6, 214, 160, 0.1); padding: 10px; border-radius: 8px; flex: 1; margin-right: 5px;">
+                                    <div style="font-size: 0.8rem; color: #666;">Revenue</div>
+                                    <div id="pnl-revenue" style="font-size: 1.4rem; font-weight: bold; color: var(--success);">$0</div>
+                                </div>
+                                <div style="text-align: center; background: rgba(239, 71, 111, 0.1); padding: 10px; border-radius: 8px; flex: 1; margin-left: 5px;">
+                                    <div style="font-size: 0.8rem; color: #666;">Cost</div>
+                                    <div id="pnl-cost" style="font-size: 1.4rem; font-weight: bold; color: var(--danger);">$0</div>
+                                </div>
+                            </div>
+                            <div style="text-align: center; background: #f8f9fa; padding: 10px; border-radius: 8px; margin-bottom: 15px;">
+                                <div style="font-size: 0.8rem; color: #666;">Net Profit/Loss</div>
+                                <div id="pnl-net" style="font-size: 1.6rem; font-weight: bold;">$0</div>
+                            </div>
+                        </div>
+                        <pre id="trade-pnl-content">Click "Trade P&L" to see data</pre>
+                    </div>
+                </div>
+                <div class="card" id="portfolio-performance">
+                    <h3><i class="fas fa-wallet"></i> Portfolio Performance</h3>
+                    <div class="card-content">
+                        <pre id="portfolio-performance-content">Click "Portfolio" to see data</pre>
+                    </div>
+                </div>
+                <div class="card" id="battery-utilization">
+                    <h3><i class="fas fa-battery-half"></i> Battery Utilization</h3>
+                    <div class="card-content">
+                        <pre id="battery-utilization-content">Click "Battery Utilization" to see data</pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Energy Trading Platform | <i class="fas fa-bolt"></i> Power your future with smart energy trading</p>
+    </footer>
+
+    <script src="helper.js"></script>
+    <script>
+        // Check if user is logged in
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = localStorage.getItem('auth_token');
+            if (!token) {
+                alert('You are not logged in. Redirecting to login page...');
+                window.location.href = '/login.html';
+            }
+        });
+
+        // Logout function
+        document.getElementById('logout-button').addEventListener('click', function() {
+            localStorage.removeItem('auth_token');
+            alert('Logged out successfully');
+            window.location.href = '/login.html';
+        });
+
+        // System Status
+        document.getElementById('load-status').addEventListener('click', function() {
+            makeApiCall('/api/status')
+                .then(data => {
+                    document.getElementById('system-status-data').textContent = JSON.stringify(data, null, 2);
+                })
+                .catch(error => {
+                    document.getElementById('system-status-data').textContent = `Error: ${error.message}`;
+                });
+        });
+
+        // Battery Status
+        document.getElementById('load-battery').addEventListener('click', function() {
+            makeApiCall('/api/battery/status')
+                .then(data => {
+                    document.getElementById('battery-status-data').textContent = JSON.stringify(data, null, 2);
+                    
+                    // Update visual representation
+                    document.getElementById('battery-visual').style.display = 'block';
+                    const percentage = data.percentage || 0;
+                    document.getElementById('battery-percentage').textContent = `${percentage}%`;
+                    document.getElementById('battery-level-indicator').style.width = `${percentage}%`;
+                    document.getElementById('battery-total').textContent = `${data.total_capacity || 0} kWh`;
+                    document.getElementById('battery-used').textContent = `${data.used_capacity || 0} kWh`;
+                    document.getElementById('battery-available').textContent = `${data.remaining_capacity || 0} kWh`;
+                })
+                .catch(error => {
+                    document.getElementById('battery-status-data').textContent = `Error: ${error.message}`;
+                });
+        });
+
+        // Market Price
+        document.getElementById('load-market').addEventListener('click', function() {
+            makeApiCall('/api/market-data/current')
+                .then(data => {
+                    document.getElementById('market-data-content').textContent = JSON.stringify(data, null, 2);
+                    
+                    // Update visual representation
+                    document.getElementById('market-visual').style.display = 'block';
+                    document.getElementById('current-price').textContent = data.price ? data.price.toFixed(2) : '--';
+                    document.getElementById('market-period').textContent = data.delivery_period || '--';
+                    document.getElementById('market-name').textContent = data.market || '--';
+                    
+                    // Update trade price with current market price
+                    if (data.price) {
+                        document.getElementById('trade-price').value = data.price.toFixed(2);
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('market-data-content').textContent = `Error: ${error.message}`;
+                });
+        });
+
+        // Price Forecast
+        document.getElementById('load-forecast').addEventListener('click', function() {
+            makeApiCall('/api/forecast/price')
+                .then(data => {
+                    document.getElementById('forecast-data-content').textContent = JSON.stringify(data, null, 2);
+                })
+                .catch(error => {
+                    document.getElementById('forecast-data-content').textContent = `Error: ${error.message}`;
+                });
+        });
+
+        // Trade History
+        document.getElementById('load-trades').addEventListener('click', function() {
+            makeApiCall('/api/trades/')
+                .then(data => {
+                    document.getElementById('trade-history-content').textContent = JSON.stringify(data, null, 2);
+                })
+                .catch(error => {
+                    document.getElementById('trade-history-content').textContent = `Error: ${error.message}`;
+                });
+        });
+
+        // Buy Electricity
+        document.getElementById('buy-button').addEventListener('click', function() {
+            const quantity = document.getElementById('trade-quantity').value;
+            const price = document.getElementById('trade-price').value;
+            
+            makeApiCall('/api/trades/buy', 'POST', {
+                quantity: parseFloat(quantity),
+                price: parseFloat(price)
+            })
+                .then(data => {
+                    document.getElementById('trade-result').textContent = JSON.stringify(data, null, 2);
+                    // Refresh battery status
+                    document.getElementById('load-battery').click();
+                })
+                .catch(error => {
+                    document.getElementById('trade-result').textContent = `Error: ${error.message}`;
+                });
+        });
+
+        // Sell Electricity
+        document.getElementById('sell-button').addEventListener('click', function() {
+            const quantity = document.getElementById('trade-quantity').value;
+            const price = document.getElementById('trade-price').value;
+            
+            makeApiCall('/api/trades/sell', 'POST', {
+                quantity: parseFloat(quantity),
+                price: parseFloat(price)
+            })
+                .then(data => {
+                    document.getElementById('trade-result').textContent = JSON.stringify(data, null, 2);
+                    // Refresh battery status
+                    document.getElementById('load-battery').click();
+                })
+                .catch(error => {
+                    document.getElementById('trade-result').textContent = `Error: ${error.message}`;
+                });
+        });
+
+        // Trade P&L
+        document.getElementById('load-pnl').addEventListener('click', function() {
+            makeApiCall('/api/performance/trade-pnl')
+                .then(data => {
+                    document.getElementById('trade-pnl-content').textContent = JSON.stringify(data, null, 2);
+                    
+                    // Update visual representation
+                    document.getElementById('pnl-visual').style.display = 'block';
+                    
+                    const sellRevenue = data.financials?.sell_revenue || 0;
+                    const buyCost = data.financials?.buy_cost || 0;
+                    const profitLoss = data.financials?.profit_loss || 0;
+                    
+                    document.getElementById('pnl-revenue').textContent = `$${sellRevenue}`;
+                    document.getElementById('pnl-cost').textContent = `$${buyCost}`;
+                    
+                    const netElement = document.getElementById('pnl-net');
+                    netElement.textContent = `$${Math.abs(profitLoss).toFixed(2)}`;
+                    
+                    if (profitLoss >= 0) {
+                        netElement.style.color = 'var(--success)';
+                        netElement.textContent = `+$${profitLoss.toFixed(2)}`;
+                    } else {
+                        netElement.style.color = 'var(--danger)';
+                        netElement.textContent = `-$${Math.abs(profitLoss).toFixed(2)}`;
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('trade-pnl-content').textContent = `Error: ${error.message}`;
+                });
+        });
+
+        // Portfolio Performance
+        document.getElementById('load-portfolio').addEventListener('click', function() {
+            makeApiCall('/api/performance/portfolio')
+                .then(data => {
+                    document.getElementById('portfolio-performance-content').textContent = JSON.stringify(data, null, 2);
+                })
+                .catch(error => {
+                    document.getElementById('portfolio-performance-content').textContent = `Error: ${error.message}`;
+                });
+        });
+
+        // Battery Utilization
+        document.getElementById('load-utilization').addEventListener('click', function() {
+            makeApiCall('/api/performance/battery-utilization')
+                .then(data => {
+                    document.getElementById('battery-utilization-content').textContent = JSON.stringify(data, null, 2);
+                })
+                .catch(error => {
+                    document.getElementById('battery-utilization-content').textContent = `Error: ${error.message}`;
+                });
+        });
+    </script>
+</body>
+</html> 

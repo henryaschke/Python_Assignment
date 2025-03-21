@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy Trading Platform</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Energy Trading Platform</h1>
+    </header>
+
+    <main>
+        <section id="auth">
+            <h2>Authentication</h2>
+            <p>You need to authenticate to use the API endpoints. Click the button below to login:</p>
+            <a href="/login.html">
+                <button>Go to Login Page</button>
+            </a>
+            <p>Default credentials: admin@example.com / admin123</p>
+            <p>After logging in, copy the access_token and paste it in the Authorization header for other requests.</p>
+            
+            <h3>Interactive Dashboard</h3>
+            <p>For a more interactive experience, try our dashboard:</p>
+            <a href="/dashboard.html">
+                <button>Go to Dashboard</button>
+            </a>
+            
+            <h3>Alternative Login Method</h3>
+            <p>Use this curl command to login:</p>
+            <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto;">
+curl -X POST "http://localhost:8000/api/auth/login" -H "Content-Type: application/json" -d "{\"email\":\"admin@example.com\",\"password\":\"admin123\"}"
+            </pre>
+        </section>
+
+        <section id="battery">
+            <h2>Battery Management</h2>
+            <a href="/api/battery/status" target="_blank">
+                <button>Get Battery Status</button>
+            </a>
+        </section>
+
+        <section id="market">
+            <h2>Market Data</h2>
+            <a href="/api/market-data/today" target="_blank">
+                <button>Get Today's Market Data</button>
+            </a>
+            <br><br>
+            <a href="/api/market-data/current" target="_blank">
+                <button>Get Current Market Price</button>
+            </a>
+        </section>
+
+        <section id="forecast">
+            <h2>Price Forecast</h2>
+            <a href="/api/forecast/price" target="_blank">
+                <button>Get Price Forecast</button>
+            </a>
+            <br><br>
+            <a href="/api/forecast/accuracy" target="_blank">
+                <button>Get Forecast Accuracy</button>
+            </a>
+        </section>
+
+        <section id="trading">
+            <h2>Electricity Trading</h2>
+            <h3>Buy Electricity</h3>
+            <form action="/api/trades/buy" method="post" target="_blank">
+                <div class="form-group">
+                    <label for="buy-quantity">Quantity (kWh):</label>
+                    <input type="number" id="buy-quantity" name="quantity" value="10" min="1" max="100" required>
+                </div>
+                <div class="form-group">
+                    <label for="buy-price">Price:</label>
+                    <input type="number" id="buy-price" name="price" value="40" min="1" step="0.01" required>
+                </div>
+                <button type="submit">Buy Electricity</button>
+            </form>
+
+            <h3>Sell Electricity</h3>
+            <form action="/api/trades/sell" method="post" target="_blank">
+                <div class="form-group">
+                    <label for="sell-quantity">Quantity (kWh):</label>
+                    <input type="number" id="sell-quantity" name="quantity" value="5" min="1" max="100" required>
+                </div>
+                <div class="form-group">
+                    <label for="sell-price">Price:</label>
+                    <input type="number" id="sell-price" name="price" value="45" min="1" step="0.01" required>
+                </div>
+                <button type="submit">Sell Electricity</button>
+            </form>
+
+            <h3>Trade History</h3>
+            <a href="/api/trades/" target="_blank">
+                <button>View Trade History</button>
+            </a>
+        </section>
+
+        <section id="performance">
+            <h2>Performance Metrics</h2>
+            <h3>Trade Profit/Loss</h3>
+            <form action="/api/performance/trade-pnl" method="get" target="_blank">
+                <div class="form-group">
+                    <label for="start-date">Start Date (YYYY-MM-DD):</label>
+                    <input type="text" id="start-date" name="start_date" placeholder="e.g., 2025-02-20">
+                </div>
+                <div class="form-group">
+                    <label for="end-date">End Date (YYYY-MM-DD):</label>
+                    <input type="text" id="end-date" name="end_date" placeholder="e.g., 2025-03-20">
+                </div>
+                <button type="submit">Calculate Trade P&L</button>
+            </form>
+
+            <h3>Portfolio Performance</h3>
+            <form action="/api/performance/portfolio" method="get" target="_blank">
+                <div class="form-group">
+                    <label for="timeframe">Timeframe:</label>
+                    <select id="timeframe" name="timeframe">
+                        <option value="day">Day</option>
+                        <option value="week">Week</option>
+                        <option value="month" selected>Month</option>
+                        <option value="year">Year</option>
+                    </select>
+                </div>
+                <button type="submit">Get Portfolio Performance</button>
+            </form>
+
+            <h3>Battery Utilization</h3>
+            <form action="/api/performance/battery-utilization" method="get" target="_blank">
+                <div class="form-group">
+                    <label for="battery-timeframe">Timeframe:</label>
+                    <select id="battery-timeframe" name="timeframe">
+                        <option value="day">Day</option>
+                        <option value="week" selected>Week</option>
+                        <option value="month">Month</option>
+                    </select>
+                </div>
+                <button type="submit">Get Battery Utilization</button>
+            </form>
+        </section>
+
+        <section id="instructions">
+            <h2>How to Use This Interface</h2>
+            <ol>
+                <li>First, use the Authentication section to log in. The response will contain an access token.</li>
+                <li>For other API calls, you'll need to manually add the Authorization header to your requests:
+                    <ul>
+                        <li>In browser dev tools, you can use the Network tab to modify requests</li>
+                        <li>Or use a browser extension like "ModHeader" to add an Authorization header with format: <code>Bearer YOUR_TOKEN</code></li>
+                    </ul>
+                </li>
+                <li>The buttons above will open API endpoints in a new tab</li>
+                <li>For GET requests, you can simply click the buttons</li>
+                <li>For POST requests, fill out the forms and submit</li>
+            </ol>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Energy Trading Platform</p>
+    </footer>
+</body>
+</html> 
